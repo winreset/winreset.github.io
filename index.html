@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Floop</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #111111;
+      --surface:     #1c1c1c;
+      --surface2:    #242424;
+      --surface3:    #2d2d2d;
+      --border:      #333333;
+      --border2:     #444444;
+      --text:        #dedede;
+      --muted:       #888;
+      --faint:       #555;
+      --purple:      #9100F0;
+      --purple-lt:   #aa33f5;
+      --purple-dim:  rgba(145,0,240,0.12);
+      --purple-glow: rgba(145,0,240,0.28);
+      --green:       #3d9970;
+      --yellow:      #d4a017;
+      --mono:        'IBM Plex Mono', monospace;
+      --sans:        'IBM Plex Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 999; pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px
+      );
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(17,17,17,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 52px;
+    }
+
+    .nav-logo { height: 26px; width: auto; display: block; }
+
+    .nav-links { display: flex; align-items: center; gap: 2px; list-style: none; }
+
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-family: var(--mono); font-size: 12px;
+      padding: 6px 14px; border-radius: 3px;
+      transition: color 0.12s, background 0.12s;
+    }
+
+    .nav-links a:hover { color: var(--text); background: var(--surface2); }
+
+    .nav-cta {
+      color: var(--white-lt) !important;
+      border: 1px solid var(--purple) !important;
+    }
+
+    .nav-cta:hover { background: var(--purple-dim) !important; color: #fff !important; }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 880px; margin: 0 auto;
+      padding: 96px 40px 64px;
+    }
+
+    .hero-logo {
+      height: 72px; width: auto; display: block;
+      margin-bottom: 32px;
+    }
+
+    .hero-strapline {
+      font-family: var(--mono); font-weight: 600;
+      font-size: clamp(32px, 5.5vw, 58px);
+      line-height: 1.1; letter-spacing: -0.025em;
+      color: var(--text); margin-bottom: 8px;
+    }
+
+    .hero-strapline .hl { color: var(--purple-lt); }
+
+    .hero-tagline {
+      font-family: var(--mono); font-size: 13px;
+      color: var(--faint); margin-bottom: 28px;
+      letter-spacing: 0.04em;
+    }
+
+    .hero-tagline::before { content: '// '; color: var(--purple); }
+
+    .hero-desc {
+      font-size: 16px; color: var(--muted);
+      max-width: 500px; font-weight: 300;
+      line-height: 1.75; margin-bottom: 44px;
+    }
+
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 22px; border-radius: 4px;
+      font-family: var(--mono); font-size: 13px; font-weight: 500;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--purple); color: #fff;
+      box-shadow: 0 0 20px var(--purple-glow);
+    }
+
+    .btn-primary:hover {
+      background: var(--purple-lt);
+      box-shadow: 0 0 32px var(--purple-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border2);
+    }
+
+    .btn-outline:hover { background: var(--surface2); }
+
+    /* ── SCREENSHOT ── */
+    .screenshot-wrap {
+      max-width: 880px; margin: 0 auto;
+      padding: 0 40px 80px;
+    }
+
+    .screenshot-frame {
+      border: 1px solid var(--border);
+      border-radius: 6px; overflow: hidden;
+      box-shadow:
+        0 40px 80px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(255,255,255,0.03) inset,
+        0 0 60px rgba(145,0,240,0.07);
+      animation: fadeUp 0.6s ease both 0.1s;
+      display: block; width: 100%;
+    }
+
+    .screenshot-frame img {
+      display: block; width: 100%; height: auto;
+      image-rendering: -webkit-optimize-contrast;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTIONS ── */
+    .section { padding: 80px 40px; }
+    .section + .section { border-top: 1px solid var(--border); }
+    .section-inner { max-width: 880px; margin: 0 auto; }
+
+    .section-kicker {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--purple-lt); margin-bottom: 10px;
+    }
+
+    .section-heading {
+      font-family: var(--mono); font-weight: 600;
+      font-size: clamp(20px, 3vw, 30px); color: var(--text);
+      margin-bottom: 12px; letter-spacing: -0.015em;
+    }
+
+    .section-body {
+      font-size: 15px; color: var(--muted); max-width: 540px;
+      font-weight: 300; line-height: 1.75; margin-bottom: 48px;
+    }
+
+    /* ── FEATURE GRID ── */
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border); border-radius: 5px; overflow: hidden;
+    }
+
+    .feat-card {
+      background: var(--surface); padding: 28px 22px;
+      transition: background 0.15s;
+    }
+
+    .feat-card:hover { background: var(--surface2); }
+
+    .feat-icon {
+      width: 34px; height: 34px; border-radius: 5px;
+      background: var(--purple-dim); border: 1px solid rgba(145,0,240,0.25);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 14px; color: var(--purple-lt);
+    }
+
+    .feat-title {
+      font-family: var(--mono); font-size: 12px; font-weight: 600;
+      color: var(--text); margin-bottom: 8px;
+    }
+
+    .feat-desc { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+    /* ── CODE ── */
+    .code-block {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 5px; overflow: hidden;
+    }
+
+    .code-hdr {
+      background: var(--surface2); border-bottom: 1px solid var(--border);
+      padding: 8px 16px; display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .code-title { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+    .code-copy {
+      font-family: var(--mono); font-size: 11px; color: var(--purple-lt);
+      background: none; border: none; cursor: pointer; padding: 0;
+    }
+
+    .code-copy:hover { text-decoration: underline; }
+
+    .code-body {
+      padding: 18px 22px; font-family: var(--mono); font-size: 13px;
+      line-height: 2.1; color: var(--text); overflow-x: auto;
+    }
+
+    .p  { color: var(--purple-lt); user-select: none; }
+    .cm { color: var(--faint); }
+
+    /* ── PLATFORMS ── */
+    .platform-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; }
+
+    .platform-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 5px; padding: 18px 22px;
+      display: flex; align-items: center; gap: 14px;
+      min-width: 185px; text-decoration: none; color: var(--text);
+      transition: all 0.15s;
+    }
+
+    .platform-card:hover {
+      border-color: var(--purple);
+      background: var(--surface2);
+      box-shadow: 0 0 20px var(--purple-dim);
+    }
+
+    .platform-icon { color: var(--muted); }
+    .platform-name { font-family: var(--mono); font-size: 13px; font-weight: 500; }
+    .platform-sub  { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+
+    /* ── JSON ── */
+    .jk { color: var(--purple-lt); }
+    .js { color: var(--green); }
+    .jn { color: var(--yellow); }
+    .jb { color: var(--purple-lt); opacity: 0.6; }
+
+    /* ── LICENSE ── */
+    .license-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--mono); font-size: 12px; color: var(--muted);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 3px; padding: 7px 14px; margin-top: 18px;
+    }
+
+    .license-pill svg { color: var(--green); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--surface); border-top: 1px solid var(--border);
+      padding: 32px 40px;
+    }
+
+    .footer-inner {
+      max-width: 880px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px; flex-wrap: wrap;
+    }
+
+    .footer-logo { height: 20px; width: auto; }
+
+    .footer-links { display: flex; gap: 20px; list-style: none; }
+    .footer-links a {
+      font-family: var(--mono); font-size: 12px; color: var(--faint);
+      text-decoration: none;
+    }
+    .footer-links a:hover { color: var(--muted); }
+
+    /* ── FADE ── */
+    .fade-in {
+      opacity: 0; transform: translateY(16px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <img class="nav-logo" src="logo.png" alt="Floop" />
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#install">Install</a></li>
+    <li><a href="#protocol">Protocol</a></li>
+    <li><a href="https://github.com/winreset/floop" class="nav-cta">GitHub &#x2192;</a></li>
+  </ul>
+</nav>
+
+<div class="hero fade-in visible">
+  <img class="hero-logo" src="logo.png" alt="Floop" />
+  <h1 class="hero-strapline">Keep your <span class="hl">mind clear.</span></h1>
+  <p class="hero-tagline">no-crap instant messaging &middot; open source</p>
+  <p class="hero-desc">Floop is a fast and simple IM client, designed with usability in mind.</p>
+  <div class="hero-actions">
+    <a href="#install" class="btn btn-primary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Download
+    </a>
+    <a href="https://github.com/winreset/floop" class="btn btn-outline">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.483 0-.237-.008-.867-.013-1.702-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+      View Source
+    </a>
+  </div>
+</div>
+
+<!-- APP SCREENSHOT -->
+<div class="screenshot-wrap">
+  <div class="screenshot-frame">
+    <img src="preview.png" alt="Floop screenshot" />
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-inner">
+    <p class="section-kicker">Why Floop</p>
+    <h2 class="section-heading">Built for people who just want to chat.</h2>
+    <p class="section-body">No feeds. No reactions. No filler. Just a fast, clean interface that connects you to the people you want to talk to.</p>
+    <div class="feat-grid fade-in">
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <div class="feat-title">Instant by design</div>
+        <div class="feat-desc">Messages arrive in milliseconds, thanks to Floop's usage of WebSockets.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </div>
+        <div class="feat-title">Your history, your machine</div>
+        <div class="feat-desc">Your chat history is stored in an SQLite database on your machine. Keep your data in your hands.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+        <div class="feat-title">Presence that works</div>
+        <div class="feat-desc">Online, Away, Busy, Offline - statuses that update in real-time, not after a couple minutes. </div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <div class="feat-title">Open protocol</div>
+        <div class="feat-desc">The Floop protocol is documented and open. Build your own client or server - no permission needed.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        </div>
+        <div class="feat-title">Typing indicators</div>
+        <div class="feat-desc">See when someone is typing. Subtle, unobtrusive and clean.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <div class="feat-title">Organised contacts</div>
+        <div class="feat-desc">Group your contacts in categories. No suggested contacts, no nonsense.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTALL -->
+<section class="section" id="install">
+  <div class="section-inner">
+    <p class="section-kicker">Get Started</p>
+    <h2 class="section-heading">Download Floop.</h2>
+    <p class="section-body">Available now for Windows, more platforms coming soon.
+    </p>
+
+    <p class="section-kicker" style="margin-bottom:10px;">Floop Client</p>
+    <div class="platform-row fade-in">
+      <a href="#" class="platform-card">
+        <div class="platform-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+        </div>
+        <div>
+          <div class="platform-name">Windows Installer</div>
+          <div class="platform-sub">.exe &middot; recommended</div>
+        </div>
+      </a>
+      <a href="#" class="platform-card">
+        <div class="platform-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        </div>
+        <div>
+          <div class="platform-name">Windows Portable</div>
+          <div class="platform-sub">.zip &middot; no install needed</div>
+        </div>
+      </a>
+    </div>
+
+    <p class="section-kicker" style="margin-bottom:10px;">Floop Server</p>
+    <div class="platform-row fade-in">
+      <a href="#" class="platform-card">
+        <div class="platform-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+        </div>
+        <div>
+          <div class="platform-name">Server &mdash; Windows</div>
+          <div class="platform-sub">.exe &middot; self-host</div>
+        </div>
+      </a>
+    </div>
+    <div class="code-block fade-in">
+      <div class="code-hdr">
+        <span class="code-title">build from source</span>
+        <button class="code-copy" onclick="copyCode()">copy</button>
+      </div>
+      <div class="code-body" id="codeblock">
+        <div><span class="p">$ </span>git clone https://github.com/winreset/floop</div>
+        <div><span class="p">$ </span>cd floop/windows</div>
+        <div><span class="p">$ </span>dotnet build -c Release<span class="cm">  # requires .NET 10 SDK</span></div>
+        <div><span class="p">$ </span>dotnet run</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROTOCOL -->
+<section class="section" id="protocol">
+  <div class="section-inner">
+    <p class="section-kicker">Under the Hood</p>
+    <h2 class="section-heading">Simple protocol. Solid foundation.</h2>
+    <p class="section-body">Floop uses a clean WebSocket-based message protocol. Every action is a typed JSON envelope &mdash; easy to read, easy to implement, easy to debug.</p>
+    <div class="code-block fade-in">
+      <div class="code-hdr">
+        <span class="code-title">example &mdash; send a message</span>
+      </div>
+      <div class="code-body">
+        <div><span class="jb">{</span></div>
+        <div>&nbsp;&nbsp;<span class="jk">"type"</span>: <span class="js">"message"</span>,</div>
+        <div>&nbsp;&nbsp;<span class="jk">"to"</span>:&nbsp;&nbsp;&nbsp;<span class="js">"alice"</span>,</div>
+        <div>&nbsp;&nbsp;<span class="jk">"body"</span>: <span class="js">"hey, you around?"</span>,</div>
+        <div>&nbsp;&nbsp;<span class="jk">"ts"</span>:&nbsp;&nbsp;&nbsp;<span class="jn">1718034061</span></div>
+        <div><span class="jb">}</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LICENSE -->
+<section class="section">
+  <div class="section-inner fade-in">
+    <p class="section-kicker">License</p>
+    <h2 class="section-heading">Free as in freedom.</h2>
+    <p class="section-body">Floop is licensed under the GNU Affero General Public License v3.0. Free to use, free to modify, free to share. Run a modified server? Share those changes.</p>
+    <div class="license-pill">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      GNU AGPL 3.0 &mdash; copyleft, source-available
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <img class="footer-logo" src="logo.png" alt="Floop" />
+    <ul class="footer-links">
+      <li><a href="https://github.com/winreset/floop">github</a></li>
+      <li><a href="https://github.com/winreset/floop/blob/main/LICENSE">license</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  }), { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+  function copyCode() {
+    const text = [...document.querySelectorAll('#codeblock div')]
+      .map(d => d.textContent.replace(/^\$ /, '').trim()).filter(Boolean).join('\n');
+    navigator.clipboard.writeText(text).then(() => {
+      const b = document.querySelector('.code-copy');
+      b.textContent = 'copied!';
+      setTimeout(() => b.textContent = 'copy', 1800);
+    });
+  }
+</script>
+</body>
+</html>
